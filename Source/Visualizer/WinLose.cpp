@@ -48,10 +48,10 @@ void UWinLose::BeginPlay()
 	WinDistanceText->GetTextRender()->SetTextRenderColor(FColor::Red);
 	WinDistanceText->SetActorScale3D(FVector(0.0f, 1.5f, 1.5f));
 
-	WinDistanceLight2 = GetWorld()->SpawnActor<ARectLight>(WinLightDistance, WinLightRotation);
-	WinDistanceLight2->SetLightColor(FLinearColor::Blue);
+	WinLight = GetWorld()->SpawnActor<ARectLight>(WinLightDistance, WinLightRotation);
+	WinLight->SetLightColor(FLinearColor::Blue);
 	//***Cast Component onto Actor***
-	URectLightComponent * GetWinLight = Cast<URectLightComponent>(WinDistanceLight2->GetComponentByClass(URectLightComponent::StaticClass()));
+	URectLightComponent * GetWinLight = Cast<URectLightComponent>(WinLight->GetComponentByClass(URectLightComponent::StaticClass()));
 	GetWinLight->SetSourceWidth(115);
 	GetWinLight->SetSourceHeight(115);
 
@@ -62,12 +62,12 @@ void UWinLose::BeginPlay()
 // Called every frame
 void UWinLose::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	FVector NewLocation = ActorThatWins->GetActorLocation();
+	//Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	//FVector NewLocation = ActorThatWins->GetActorLocation();
 
-	if ((UWinLose::GetWinDistance().X - NewLocation.X) < 0.1f)
-	{
-		UE_LOG(LogClass, Warning, TEXT("You Win"));
-	}
+	//if ((UWinLose::GetWinDistance().X - NewLocation.X) < 0.1f)
+	//{
+	//	UE_LOG(LogClass, Warning, TEXT("You Win"));
+	//}
 }
 

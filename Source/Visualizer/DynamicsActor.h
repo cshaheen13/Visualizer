@@ -23,9 +23,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void MoveActor(float RunningTime);
+
+	UPROPERTY(BlueprintReadWrite)
+	bool testPush = false;
+
 	float RunningTime;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialVelocity;
 
 	UPROPERTY(EditAnywhere)
@@ -33,5 +38,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float Gravity;
+
+	float accelX;
 
 };

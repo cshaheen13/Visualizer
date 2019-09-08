@@ -31,10 +31,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	AActor* ActorThatWins;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector WinDistance;
 
-	class ARectLight* WinDistanceLight2;
+	class ARectLight* WinLight;
 
 	FVector WinLightDistance;
 	
