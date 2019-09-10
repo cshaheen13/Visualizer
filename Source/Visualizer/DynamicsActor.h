@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
 #include "DynamicsActor.generated.h"
+
+
 
 UCLASS()
 class VISUALIZER_API ADynamicsActor : public AActor
@@ -15,23 +17,31 @@ public:
 	// Sets default values for this actor's properties
 	ADynamicsActor();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void MoveActor(float RunningTime);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class AActor* ActorThatWins;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool testPush = false;
 
-	float RunningTime;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialVelocity;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector WinDistance;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+private:	
+
+	class ARectLight* WinLight;
+
+	class ATextRenderActor* WinDistanceText;
+		
+	float RunningTime;
+
+	bool YouWinBool = false;
 
 	UPROPERTY(EditAnywhere)
 	float KineticFriction;
@@ -39,6 +49,25 @@ public:
 	UPROPERTY(EditAnywhere)
 	float Gravity;
 
-	float accelX;
+	float AccelX;
+
+	float GetAccelX();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	void SetAccelX(float KineticFriction, float Gravity);
+
+	FVector WinLightLocation;
+
+	FRotator WinLightRotation;
+
+	FVector GetWinDistance();
+
+	void SetWinDistance(float x, float y, float z);
+
+	void MoveActor(float RunningTime);
+
+	void CheckWinLose();
 
 };
