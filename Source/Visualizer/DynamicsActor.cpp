@@ -24,38 +24,10 @@ ADynamicsActor::ADynamicsActor()
 void ADynamicsActor::BeginPlay()
 {
 	Super::BeginPlay();
-	SetActorTickEnabled(false);
-	SetAccelX(KineticFriction, Gravity);
-
-	float RandDistance = FMath::RandRange(300, 1500);
-	ADynamicsActor::SetWinDistance(RandDistance, 0.0f, 0.0f);
-	UE_LOG(LogClass, Warning, TEXT("Rand = %f"), RandDistance);
-	FString WinDistanceString = "X = " + (FString::SanitizeFloat(RandDistance/100)) + " meters";
-	WinLightLocation = FVector(RandDistance, 865, 40);
-	WinLightRotation = FRotator(-90, 270, -180);
-
-	WinDistanceText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(RandDistance, 930.0f, -10.0f), FRotator(0.0f, 90.0f, 0.0f));
-	WinDistanceText->GetTextRender()->SetText(FString(WinDistanceString));
-	WinDistanceText->GetTextRender()->SetTextRenderColor(FColor::Red);
-	WinDistanceText->SetActorScale3D(FVector(0.0f, 1.5f, 1.5f));
-
-	WinLight = GetWorld()->SpawnActor<ARectLight>(WinLightLocation, WinLightRotation);
-	WinLight->SetLightColor(FLinearColor::Blue);
-	//***Cast Component onto Actor***
-	URectLightComponent * GetWinLight = Cast<URectLightComponent>(WinLight->GetComponentByClass(URectLightComponent::StaticClass()));
-	GetWinLight->SetMobility(EComponentMobility::Movable);
-	GetWinLight->SetSourceWidth(115);
-	GetWinLight->SetSourceHeight(115);
-}
-
-void ADynamicsActor::SetWinDistance(float x, float y, float z)
-{
-	WinDistance = FVector(x, y, z);
-}
-
-FVector ADynamicsActor::GetWinDistance()
-{
-	return WinDistance;
+	ADynamicsActor::Setup();
+	UE_LOG(LogClass, Log, TEXT("Rand = %f"), RandDistance);
+	ADynamicsActor::SetWinText();
+	ADynamicsActor::SetWinLight();
 }
 
 float ADynamicsActor::GetAccelX()
@@ -68,30 +40,14 @@ void ADynamicsActor::SetAccelX(float KineticFriction, float Gravity)
 	AccelX = KineticFriction * Gravity;
 }
 
-void ADynamicsActor::MoveActor(float DeltaTime)
+FVector ADynamicsActor::GetWinDistance()
 {
-	FVector NewLocation = GetActorLocation();
-	FVector OldLocation = GetActorLocation();
-	float deltaX = 100 * ((InitialVelocity * RunningTime) + ((ADynamicsActor::GetAccelX())*(RunningTime)*(RunningTime)*.5));
-	//UE_LOG(LogClass, Warning, TEXT("t = %f"), RunningTime);
-	//UE_LOG(LogClass, Warning, TEXT("X = %f"), deltaX);
+	return WinDistance;
+}
 
-	if (((deltaX - NewLocation.X) >= 0))
-	{
-		NewLocation.X = deltaX;
-		RunningTime += DeltaTime;
-		SetActorLocation(NewLocation);
-		UE_LOG(LogClass, Warning, TEXT("%f"), NewLocation.X - OldLocation.X);
-	}
-	if ((RunningTime != 0) && ((NewLocation.X - OldLocation.X) <= 0.02))
-	{
-		FVector WinLoseDist = GetWinDistance();
-		if (((WinLoseDist.X - NewLocation.X) < 0.1f) && ((WinLoseDist.X - NewLocation.X) > -0.1f))
-		{
-			YouWinBool = true;
-			UE_LOG(LogClass, Warning, TEXT("You Win! %f"), WinLoseDist.X - NewLocation.X);
-		}
-	}
+void ADynamicsActor::SetWinDistance(float x, float y, float z)
+{
+	WinDistance = FVector(x, y, z);
 }
 
 // Called every frame
@@ -100,3 +56,68 @@ void ADynamicsActor::Tick(float DeltaTime)
 	MoveActor(DeltaTime);
 }
 
+void ADynamicsActor::Setup()
+{
+	SetActorTickEnabled(false);
+	SetAccelX(KineticFriction, Gravity);
+	RandDistance = FMath::RandRange(300, 1500);
+	ADynamicsActor::SetWinDistance(RandDistance, 0.0f, 0.0f);
+}
+
+void ADynamicsActor::SetWinText()
+{
+	FString WinDistanceString = "X = " + (FString::SanitizeFloat(RandDistance / 100)) + " meters";
+	WinDistanceText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(RandDistance, 930.0f, -10.0f), FRotator(0.0f, 90.0f, 0.0f));
+	WinDistanceText->GetTextRender()->SetText(FString(WinDistanceString));
+	WinDistanceText->GetTextRender()->SetTextRenderColor(FColor::Red);
+	WinDistanceText->SetActorScale3D(FVector(0.0f, 1.5f, 1.5f));
+}
+
+void ADynamicsActor::SetWinLight()
+{
+	WinLightLocation = FVector(RandDistance, 865, 40);
+	WinLightRotation = FRotator(-90, 270, -180);
+	WinLight = GetWorld()->SpawnActor<ARectLight>(WinLightLocation, WinLightRotation);
+	WinLight->SetLightColor(FLinearColor::Blue);
+	//***Cast Component onto Actor***
+	URectLightComponent * GetWinLight = Cast<URectLightComponent>(WinLight->GetComponentByClass(URectLightComponent::StaticClass()));
+	GetWinLight->SetMobility(EComponentMobility::Movable);
+	GetWinLight->SetSourceWidth(115);
+	GetWinLight->SetSourceHeight(115);
+}
+
+void ADynamicsActor::MoveActor(float DeltaTime)
+{
+	FVector NewLocation = GetActorLocation();
+	FVector OldLocation = GetActorLocation();
+	float deltaX = 100 * ((InitialVelocity * RunningTime) + ((ADynamicsActor::GetAccelX())*(RunningTime)*(RunningTime)*.5));
+
+	if (((deltaX - NewLocation.X) >= 0))
+	{
+		NewLocation.X = deltaX;
+		RunningTime += DeltaTime;
+		SetActorLocation(NewLocation);
+	}
+
+	if ((RunningTime >= 0.1) && ((NewLocation.X - OldLocation.X) <= 0.02))
+	{
+		ADynamicsActor::CheckWinLose();
+	}
+}
+
+void ADynamicsActor::CheckWinLose()
+{
+	FVector NewLocation = GetActorLocation();
+	FVector WinLoseDist = GetWinDistance();
+	//TODO Figure out rounding for floats
+	if (((WinLoseDist.X - NewLocation.X) < 0.15f) && ((WinLoseDist.X - NewLocation.X) > -0.15f))
+	{
+		YouWinBool = true;
+		UE_LOG(LogClass, Warning, TEXT("You Win! The block travelled %f meters."), NewLocation.X/100);
+	}
+	else
+	{
+		UE_LOG(LogClass, Warning, TEXT("You Lose! The block travelled %f meters."), NewLocation.X/100);
+	}
+	SetActorTickEnabled(false);
+}
