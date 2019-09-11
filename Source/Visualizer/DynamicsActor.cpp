@@ -60,7 +60,11 @@ void ADynamicsActor::Setup()
 {
 	SetActorTickEnabled(false);
 	SetAccelX(KineticFriction, Gravity);
-	RandDistance = FMath::RandRange(300, 1500);
+	
+	//Needed to set precision for floats so win distance is two decimal places or less
+	int RandInt = FMath::RandRange(300, 1500);
+	RandDistance = RandInt;
+
 	ADynamicsActor::SetWinDistance(RandDistance, 0.0f, 0.0f);
 }
 
@@ -110,14 +114,15 @@ void ADynamicsActor::CheckWinLose()
 	FVector NewLocation = GetActorLocation();
 	FVector WinLoseDist = GetWinDistance();
 	//TODO Figure out rounding for floats
-	if (((WinLoseDist.X - NewLocation.X) < 0.15f) && ((WinLoseDist.X - NewLocation.X) > -0.15f))
+	UE_LOG(LogClass, Warning, TEXT("X = %f"), WinLoseDist.X - NewLocation.X);
+	if (((WinLoseDist.X - NewLocation.X) < 5.0f) && ((WinLoseDist.X - NewLocation.X) > -5.0f))
 	{
-		YouWinBool = true;
 		UE_LOG(LogClass, Warning, TEXT("You Win! The block travelled %f meters."), NewLocation.X/100);
 	}
 	else
 	{
 		UE_LOG(LogClass, Warning, TEXT("You Lose! The block travelled %f meters."), NewLocation.X/100);
 	}
+	GameOver = true;
 	SetActorTickEnabled(false);
 }

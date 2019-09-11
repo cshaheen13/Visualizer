@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float Gravity;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool GameOver = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -51,8 +54,6 @@ private:
 	float GetAccelX();
 
 	void SetAccelX(float KineticFriction, float Gravity);
-
-	bool YouWinBool = false;
 
 	FVector WinLightLocation;
 
