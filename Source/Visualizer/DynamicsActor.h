@@ -23,41 +23,37 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialVelocity;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float KineticFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Gravity;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector WinDistance;
 
-	UPROPERTY(EditAnywhere)
-	float KineticFriction;
-
-	UPROPERTY(EditAnywhere)
-	float Gravity;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float AccelX;
 
 	UPROPERTY(BlueprintReadOnly)
-	bool GameOver = false;
+	bool DoYouWin = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool IsGameOver = false;
+
+	float SetupDistance;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 private:	
-
-	class ARectLight* WinLight;
-
-	class ATextRenderActor* WinDistanceText;
 		
 	float RunningTime;
 
-	float RandDistance;
-
-	float AccelX;
-
 	float GetAccelX();
 
-	void SetAccelX(float KineticFriction, float Gravity);
-
-	FVector WinLightLocation;
-
-	FRotator WinLightRotation;
+	void SetAccelX(float Gravity, float KineticFriction);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -68,11 +64,7 @@ private:
 
 	void Setup();
 
-	void SetWinText();
-
-	void SetWinLight();
-
-	void MoveActor(float RunningTime);
+	void MoveKineticFrictionActor(float RunningTime);
 
 	void CheckWinLose();
 };
