@@ -16,7 +16,7 @@ public:
 	AProjectileMotionActor();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class AActor* ActorThatWins;
+	AActor* ActorThatWins;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialVelocity;
@@ -24,14 +24,40 @@ public:
 	UPROPERTY(EditAnywhere)
 	float Gravity;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialAngle;
+
+	UPROPERTY(BlueprintReadOnly)
+	float InitialZLoc;
+
+	UPROPERTY(BlueprintReadOnly)
+	float InitialXLoc;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool IsGameOver = false;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool isImpulse = false;
+
 	UPROPERTY(BlueprintReadWrite)
 	bool isOverlapGoal = false;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCapsuleComponent* Overlap;
+
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+
+	UFUNCTION()
+	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	void SetProjectileText(float initialX, float initialZ);
+
+	UFUNCTION(BlueprintCallable)
+	void SetHitGroundTime(float initialZ, float initialV);
+
+	float GetHitGroundTime();
 
 protected:
 	// Called when the game starts or when spawned
@@ -39,9 +65,39 @@ protected:
 
 private:	
 
+	class ATextRenderActor* WinDistanceText;
+
 	float RunningTime;
 
 	float AccelX;
+	
+	float OldZ;
+
+	float OldX;
+
+	float ImpulseVelocityZ;
+
+	float VelX;
+
+	float VelZ;
+
+	float RadiusBall = 12;
+
+	float CoeffRestitution = .83;
+
+	float ImpulseTime;
+
+	float InitV;
+
+	float t;
+
+	float HitGroundTime;
+	
+	float VelocityZHit;
+
+	float TimeMaxZ;
+
+	float ZMax;
 
 	FVector OriginalLocation;
 
@@ -51,5 +107,7 @@ private:
 	void MoveProjectileMotionActor(float DeltaTime);
 
 	void Setup();
+
+	float QuadraticEquation(float Gravity, float InitialAngle, float InitialV, float RadiusBall, float InitialZ);
 
 };
