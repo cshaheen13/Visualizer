@@ -54,10 +54,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetProjectileText(float initialX, float initialZ);
 
+	void DeleteProjectileText();
+
 	UFUNCTION(BlueprintCallable)
 	void SetHitGroundTime(float initialZ, float initialV);
 
 	float GetHitGroundTime();
+
+	bool IsTextRendered = false;
 
 protected:
 	// Called when the game starts or when spawned

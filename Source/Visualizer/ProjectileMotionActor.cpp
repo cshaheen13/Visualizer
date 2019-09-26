@@ -8,6 +8,7 @@
 #include "Runtime/Engine/Classes/Components/TextRenderComponent.h"
 #include "Runtime/Engine/Classes/Engine/TextRenderActor.h"
 #include "Components/TextRenderComponent.h"
+#include "EngineUtils.h"
 
 // Sets default values
 AProjectileMotionActor::AProjectileMotionActor()
@@ -90,6 +91,12 @@ float AProjectileMotionActor::QuadraticEquation(float Gravity, float InitialAngl
 
 void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ)
 {	
+	if (IsTextRendered)
+	{
+		DeleteProjectileText();
+		IsTextRendered = false;
+	}
+
 	InitV = InitialVelocity;
 	OldX = initialX;
 	OldZ = initialZ;
@@ -140,8 +147,19 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ)
 
 		if ((InitV < 1) || (deltaX > 525))
 		{
+			IsTextRendered = true;
 			break;
 		}
+	}
+}
+
+void AProjectileMotionActor::DeleteProjectileText()
+{
+	for (TActorIterator<ATextRenderActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		ATextRenderActor *Text = *ActorItr;
+		Text->Destroy();
 	}
 }
 
