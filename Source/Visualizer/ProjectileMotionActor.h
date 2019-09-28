@@ -63,6 +63,12 @@ public:
 
 	bool IsTextRendered = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	FString SelectedLocation;
+
+	UFUNCTION(BlueprintCallable)
+	void SetupShot(FString Location);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -103,14 +109,18 @@ private:
 
 	float ZMax;
 
+	float FreeThrowDist = -100;
+
+	float ThreePointDist = -375;
+
+	float HalfCourtDist = -915;
+
 	FVector OriginalLocation;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void MoveProjectileMotionActor(float DeltaTime);
-
-	void Setup();
 
 	float QuadraticEquation(float Gravity, float InitialAngle, float InitialV, float RadiusBall, float InitialZ);
 

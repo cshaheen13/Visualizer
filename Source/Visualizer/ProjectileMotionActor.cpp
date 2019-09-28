@@ -30,10 +30,10 @@ void AProjectileMotionActor::BeginPlay()
 {
 	Super::BeginPlay();
 	SetActorTickEnabled(false);
-	FVector OriginalLocation = GetActorLocation();
+	OriginalLocation = GetActorLocation();
+	SetActorLocation(OriginalLocation);
 	InitialZLoc = OriginalLocation.Z;
 	InitialXLoc = OriginalLocation.X;
-	SetHitGroundTime(InitialZLoc, InitialVelocity);
 	//SetHitGroundTime(InitialZLoc, InitialVelocity);
 	UE_LOG(LogClass, Warning, TEXT("V = %f"), InitialVelocity);
 	UE_LOG(LogClass, Warning, TEXT("angle in radians = %f"), FMath::Sin(FMath::DegreesToRadians(InitialAngle))); 
@@ -45,10 +45,25 @@ void AProjectileMotionActor::Tick(float DeltaTime)
 	MoveProjectileMotionActor(DeltaTime);
 }
 
-void AProjectileMotionActor::Setup()
+void AProjectileMotionActor::SetupShot(FString Location)
 {
-	//SetActorTickEnabled(false);
-	//SetAccelX(KineticFriction, Gravity);
+	if (Location == "Free Throw")
+	{
+		OriginalLocation = FVector(FreeThrowDist, 925.0f, 212.312f);
+	}
+	else if (Location == "Three Point")
+	{
+		OriginalLocation = FVector(ThreePointDist, 925.0f, 212.312f);
+	}
+	else
+	{
+		OriginalLocation = FVector(HalfCourtDist, 925.0f, 212.312f);
+	}
+	
+	UE_LOG(LogClass, Warning, TEXT("Loc = %s"), *Location);
+	SetActorLocation(OriginalLocation);
+	InitialZLoc = OriginalLocation.Z;
+	InitialXLoc = OriginalLocation.X;
 }
 
 void AProjectileMotionActor::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
