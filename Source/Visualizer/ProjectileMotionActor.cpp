@@ -6,7 +6,7 @@
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Components/PrimitiveComponent.h"
 #include "Runtime/Engine/Classes/Components/TextRenderComponent.h"
-#include "Runtime/Engine/Classes/Engine/TextRenderActor.h"
+#include "Engine/TextRenderActor.h"
 #include "Components/TextRenderComponent.h"
 #include "EngineUtils.h"
 
@@ -104,7 +104,7 @@ float AProjectileMotionActor::QuadraticEquation(float Gravity, float InitialAngl
 	return root2;
 }
 
-void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ)
+void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, bool PathHidden)
 {	
 	if (IsTextRendered)
 	{
@@ -137,6 +137,8 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ)
 		WinDistanceText->GetTextRender()->SetWorldSize(1);
 		WinDistanceText->GetTextRender()->SetXScale(50);
 		WinDistanceText->GetTextRender()->SetYScale(25);
+		WinDistanceText->GetTextRender()->SetHiddenInGame(PathHidden);
+		
 
 		VelX = InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
 		VelZ = (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * t);
@@ -167,6 +169,17 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ)
 		}
 	}
 }
+
+void AProjectileMotionActor::SetTextActorVisible(bool PathHidden)
+{
+	for (TActorIterator<ATextRenderActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		ATextRenderActor *Text = *ActorItr;
+		Text->GetTextRender()->SetHiddenInGame(PathHidden);
+	}
+}
+
 
 void AProjectileMotionActor::DeleteProjectileText()
 {
@@ -216,7 +229,7 @@ void AProjectileMotionActor::MoveProjectileMotionActor(float DeltaTime)
 		InitialZLoc = InitialImpulseLocation.Z;
 		isImpulse = false;
 
-		if (ImpulseVelocityZ < .5)
+		if ((ImpulseVelocityZ < .5) || (deltaX >= 525))
 		{
 			SetActorTickEnabled(false);
 			UPrimitiveComponent * Primitive = Cast<UPrimitiveComponent>(GetComponentByClass(UPrimitiveComponent::StaticClass()));

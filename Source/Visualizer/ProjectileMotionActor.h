@@ -42,6 +42,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool isOverlapGoal = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool IsPathHidden = true;
+
 	UPROPERTY(VisibleAnywhere)
 	class UCapsuleComponent* Overlap;
 
@@ -52,7 +55,10 @@ public:
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 
 	UFUNCTION(BlueprintCallable)
-	void SetProjectileText(float initialX, float initialZ);
+	void SetProjectileText(float initialX, float initialZ, bool PathHidden);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTextActorVisible(bool PathHidden);
 
 	void DeleteProjectileText();
 
