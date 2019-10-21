@@ -51,17 +51,17 @@ void AProjectileMotionActor::SetupShot(FString Location)
 {
 	if (Location == "Free Throw")
 	{
-		OriginalLocation = FVector(FreeThrowDist, 925.0f, 212.312f);
+		OriginalLocation = FVector(FreeThrowDist, 925.0f, 212.f);
 		CameraLoc = FreeThrowCameraLoc;
 	}
 	else if (Location == "Three Point")
 	{
-		OriginalLocation = FVector(ThreePointDist, 925.0f, 212.312f);
+		OriginalLocation = FVector(ThreePointDist, 925.0f, 212.f);
 		CameraLoc = ThreePointCameraLoc;
 	}
 	else
 	{
-		OriginalLocation = FVector(HalfCourtDist, 925.0f, 212.312f);
+		OriginalLocation = FVector(HalfCourtDist, 925.0f, 212.f);
 		CameraLoc = HalfCourtCameraLoc;
 	}
 	
@@ -152,17 +152,29 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 		DistanceXText->GetTextRender()->SetXScale(100);
 		DistanceXText->GetTextRender()->SetYScale(100);
 
-		DistanceZText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(745.f, 950.f, 150.f), FRotator(0.f, 180.f, 0.f));
-		MyTextVariable = "DistanceTextZ";
+		HeightTextGoal = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(745.f, 950.f, 150.f), FRotator(0.f, 180.f, 0.f));
+		MyTextVariable = "HeightTextGoal";
 		TextName = *MyTextVariable;
-		DistanceZText->Rename(TextName);
-		DistanceZText->GetTextRender()->SetText(FString("Y = 3.05 meters"));
-		DistanceZText->GetTextRender()->SetTextRenderColor(FColor::Black);
-		DistanceZText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-		DistanceZText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-		DistanceZText->GetTextRender()->SetWorldSize(1);
-		DistanceZText->GetTextRender()->SetXScale(50);
-		DistanceZText->GetTextRender()->SetYScale(50);
+		HeightTextGoal->Rename(TextName);
+		HeightTextGoal->GetTextRender()->SetText(FString("Y(g) = 3.05 meters"));
+		HeightTextGoal->GetTextRender()->SetTextRenderColor(FColor::Black);
+		HeightTextGoal->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
+		HeightTextGoal->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
+		HeightTextGoal->GetTextRender()->SetWorldSize(1);
+		HeightTextGoal->GetTextRender()->SetXScale(50);
+		HeightTextGoal->GetTextRender()->SetYScale(50);
+
+		HeightTextBall = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialXLoc, 925.f, 185.f), FRotator(0.f, 90.f, 0.f));
+		MyTextVariable = "HeightTextBall";
+		TextName = *MyTextVariable;
+		HeightTextBall->Rename(TextName);
+		HeightTextBall->GetTextRender()->SetText(FString("Y(b) = 2.12 meters"));
+		HeightTextBall->GetTextRender()->SetTextRenderColor(FColor::White);
+		HeightTextBall->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
+		HeightTextBall->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
+		HeightTextBall->GetTextRender()->SetWorldSize(1);
+		HeightTextBall->GetTextRender()->SetXScale(25);
+		HeightTextBall->GetTextRender()->SetYScale(25);
 
 		IsDistanceTextRendered = true;
 	}
@@ -170,6 +182,7 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 	{
 		DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
 		DistanceXText->SetActorLocation(FVector(InitialXLoc + ShotDistance / 2, -260.f, 150.f));
+		HeightTextBall->SetActorLocation(FVector(InitialXLoc, 925.f, 185.f));
 	}
 	
 }
@@ -246,7 +259,7 @@ void AProjectileMotionActor::SetTextActorVisible(bool PathHidden)
 	{
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		ATextRenderActor *Text = *ActorItr;
-		if ((Text->GetName() != "DistanceTextX") && (Text->GetName() != "DistanceTextZ"))
+		if ((Text->GetName() != "DistanceTextX") && (Text->GetName() != "HeightTextGoal") && (Text->GetName() != "HeightTextBall")) 
 		{
 			Text->GetTextRender()->SetHiddenInGame(PathHidden);;
 		}
@@ -260,7 +273,7 @@ void AProjectileMotionActor::DeleteProjectileText()
 	{
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		ATextRenderActor *Text = *ActorItr;
-		if ((Text->GetName() != "DistanceTextX") && (Text->GetName() != "DistanceTextZ"))
+		if ((Text->GetName() != "DistanceTextX") && (Text->GetName() != "HeightTextGoal") && (Text->GetName() != "HeightTextBall"))
 		{
 			Text->Destroy();
 		}

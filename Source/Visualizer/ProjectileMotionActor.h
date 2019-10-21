@@ -98,7 +98,9 @@ private:
 
 	class ATextRenderActor* DistanceXText;
 
-	class ATextRenderActor* DistanceZText;
+	class ATextRenderActor* HeightTextGoal;
+
+	class ATextRenderActor* HeightTextBall;
 
 	float RunningTime;
 
