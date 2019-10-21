@@ -19,6 +19,12 @@ public:
 	AActor* ActorThatWins;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* HoopLocationCylinder;
+
+	UPROPERTY(EditAnywhere)
+	class ACameraActor* Camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InitialVelocity;
 
 	UPROPERTY(EditAnywhere)
@@ -55,6 +61,9 @@ public:
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 
 	UFUNCTION(BlueprintCallable)
+	void SetDistanceText(float initialX, float initialZ);
+
+	UFUNCTION(BlueprintCallable)
 	void SetProjectileText(float initialX, float initialZ, bool PathHidden);
 
 	UFUNCTION(BlueprintCallable)
@@ -67,7 +76,11 @@ public:
 
 	float GetHitGroundTime();
 
+	float ShotDistance;
+
 	bool IsTextRendered = false;
+
+	bool IsDistanceTextRendered = false;
 
 	UPROPERTY(BlueprintReadWrite)
 	FString SelectedLocation;
@@ -81,7 +94,11 @@ protected:
 
 private:	
 
-	class ATextRenderActor* WinDistanceText;
+	class ATextRenderActor* ProjectileMotionMapText;
+
+	class ATextRenderActor* DistanceXText;
+
+	class ATextRenderActor* DistanceZText;
 
 	float RunningTime;
 
@@ -115,11 +132,23 @@ private:
 
 	float ZMax;
 
-	float FreeThrowDist = -100;
+	float FreeThrowDist = -40;
 
-	float ThreePointDist = -375;
+	float ThreePointDist = -285;
 
-	float HalfCourtDist = -915;
+	float HalfCourtDist = -800;
+
+	FVector CameraLoc;
+
+	FVector FreeThrowCameraLoc = FVector(225, 1635, 125);
+
+	FVector ThreePointCameraLoc = FVector(115, 1810, 180);
+
+	FVector HalfCourtCameraLoc = FVector(-100, 2000, 180);
+
+	float CenterPoint;
+
+	FVector HoopLocation;
 
 	FVector OriginalLocation;
 
@@ -127,6 +156,8 @@ private:
 	virtual void Tick(float DeltaTime) override;
 
 	void MoveProjectileMotionActor(float DeltaTime);
+
+	void MoveCamera(ACameraActor* Camera, FVector CameraLocation);
 
 	float QuadraticEquation(float Gravity, float InitialAngle, float InitialV, float RadiusBall, float InitialZ);
 

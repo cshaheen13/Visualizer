@@ -8,7 +8,10 @@
 #include "Runtime/Engine/Classes/Components/TextRenderComponent.h"
 #include "Engine/TextRenderActor.h"
 #include "Components/TextRenderComponent.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "EngineUtils.h"
+#include "Misc/Char.h"
 
 // Sets default values
 AProjectileMotionActor::AProjectileMotionActor()
@@ -34,7 +37,6 @@ void AProjectileMotionActor::BeginPlay()
 	SetActorLocation(OriginalLocation);
 	InitialZLoc = OriginalLocation.Z;
 	InitialXLoc = OriginalLocation.X;
-	//SetHitGroundTime(InitialZLoc, InitialVelocity);
 	UE_LOG(LogClass, Warning, TEXT("V = %f"), InitialVelocity);
 	UE_LOG(LogClass, Warning, TEXT("angle in radians = %f"), FMath::Sin(FMath::DegreesToRadians(InitialAngle))); 
 }
@@ -50,20 +52,33 @@ void AProjectileMotionActor::SetupShot(FString Location)
 	if (Location == "Free Throw")
 	{
 		OriginalLocation = FVector(FreeThrowDist, 925.0f, 212.312f);
+		CameraLoc = FreeThrowCameraLoc;
 	}
 	else if (Location == "Three Point")
 	{
 		OriginalLocation = FVector(ThreePointDist, 925.0f, 212.312f);
+		CameraLoc = ThreePointCameraLoc;
 	}
 	else
 	{
 		OriginalLocation = FVector(HalfCourtDist, 925.0f, 212.312f);
+		CameraLoc = HalfCourtCameraLoc;
 	}
 	
 	UE_LOG(LogClass, Warning, TEXT("Loc = %s"), *Location);
 	SetActorLocation(OriginalLocation);
+	MoveCamera(Camera, CameraLoc);
+
 	InitialZLoc = OriginalLocation.Z;
 	InitialXLoc = OriginalLocation.X;
+
+	HoopLocation = HoopLocationCylinder->GetActorLocation();
+	ShotDistance = HoopLocation.X - InitialXLoc;
+	UE_LOG(LogClass, Warning, TEXT("ShotDistance = %f"), ShotDistance);
+
+	CenterPoint = InitialXLoc + ShotDistance / 2;
+	SetDistanceText(InitialXLoc, InitialZLoc);
+
 }
 
 void AProjectileMotionActor::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
@@ -104,6 +119,61 @@ float AProjectileMotionActor::QuadraticEquation(float Gravity, float InitialAngl
 	return root2;
 }
 
+void AProjectileMotionActor::MoveCamera(ACameraActor* Camera, FVector CameraLocation)
+{
+	UCameraComponent * Comp = Camera->GetCameraComponent();
+	Comp->SetWorldLocation(CameraLocation);
+}
+
+void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
+{
+	//for (TActorIterator<ATextRenderActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	//{
+	//	ATextRenderActor *Text = *ActorItr;
+	//	if (Text != nullptr)
+	//	{
+	//		Text->K2_DestroyActor();
+	//	}
+	//}
+
+	FString ShotDistanceString = "X = " + (FString::SanitizeFloat(ShotDistance / 100)) + " meters";
+
+	if (IsDistanceTextRendered == false)
+	{
+		DistanceXText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialXLoc + ShotDistance/2, -260.f, 150.f), FRotator(0.f, 90.f, 0.f));
+		FString MyTextVariable = "DistanceTextX";
+		const TCHAR* TextName = *MyTextVariable;
+		DistanceXText->Rename(TextName);
+		DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
+		DistanceXText->GetTextRender()->SetTextRenderColor(FColor::Black);
+		DistanceXText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
+		DistanceXText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
+		DistanceXText->GetTextRender()->SetWorldSize(1);
+		DistanceXText->GetTextRender()->SetXScale(100);
+		DistanceXText->GetTextRender()->SetYScale(100);
+
+		DistanceZText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(745.f, 950.f, 150.f), FRotator(0.f, 180.f, 0.f));
+		MyTextVariable = "DistanceTextZ";
+		TextName = *MyTextVariable;
+		DistanceZText->Rename(TextName);
+		DistanceZText->GetTextRender()->SetText(FString("Y = 3.05 meters"));
+		DistanceZText->GetTextRender()->SetTextRenderColor(FColor::Black);
+		DistanceZText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
+		DistanceZText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
+		DistanceZText->GetTextRender()->SetWorldSize(1);
+		DistanceZText->GetTextRender()->SetXScale(50);
+		DistanceZText->GetTextRender()->SetYScale(50);
+
+		IsDistanceTextRendered = true;
+	}
+	else
+	{
+		DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
+		DistanceXText->SetActorLocation(FVector(InitialXLoc + ShotDistance / 2, -260.f, 150.f));
+	}
+	
+}
+
 void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, bool PathHidden)
 {	
 	if (IsTextRendered)
@@ -129,15 +199,15 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, b
 		float VelSlope = (deltaZ - OldZ) / (deltaX - OldX);
 		float angle = FMath::RadiansToDegrees(FMath::Atan(VelSlope)) - 90;
 
-		WinDistanceText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(deltaX, 925.f, deltaZ), FRotator(0.f, 90.f, angle));
-		WinDistanceText->GetTextRender()->SetText(FString(WinDistanceString));
-		WinDistanceText->GetTextRender()->SetTextRenderColor(FColor::Red);
-		WinDistanceText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-		WinDistanceText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-		WinDistanceText->GetTextRender()->SetWorldSize(1);
-		WinDistanceText->GetTextRender()->SetXScale(50);
-		WinDistanceText->GetTextRender()->SetYScale(25);
-		WinDistanceText->GetTextRender()->SetHiddenInGame(PathHidden);
+		ProjectileMotionMapText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(deltaX, 925.f, deltaZ), FRotator(0.f, 90.f, angle));
+		ProjectileMotionMapText->GetTextRender()->SetText(FString(WinDistanceString));
+		ProjectileMotionMapText->GetTextRender()->SetTextRenderColor(FColor::Red);
+		ProjectileMotionMapText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
+		ProjectileMotionMapText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
+		ProjectileMotionMapText->GetTextRender()->SetWorldSize(1);
+		ProjectileMotionMapText->GetTextRender()->SetXScale(50);
+		ProjectileMotionMapText->GetTextRender()->SetYScale(25);
+		ProjectileMotionMapText->GetTextRender()->SetHiddenInGame(PathHidden);
 		
 
 		VelX = InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
@@ -176,10 +246,13 @@ void AProjectileMotionActor::SetTextActorVisible(bool PathHidden)
 	{
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		ATextRenderActor *Text = *ActorItr;
-		Text->GetTextRender()->SetHiddenInGame(PathHidden);
+		if ((Text->GetName() != "DistanceTextX") && (Text->GetName() != "DistanceTextZ"))
+		{
+			Text->GetTextRender()->SetHiddenInGame(PathHidden);;
+		}
+		
 	}
 }
-
 
 void AProjectileMotionActor::DeleteProjectileText()
 {
@@ -187,7 +260,11 @@ void AProjectileMotionActor::DeleteProjectileText()
 	{
 		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
 		ATextRenderActor *Text = *ActorItr;
-		Text->Destroy();
+		if ((Text->GetName() != "DistanceTextX") && (Text->GetName() != "DistanceTextZ"))
+		{
+			Text->Destroy();
+		}
+
 	}
 }
 
