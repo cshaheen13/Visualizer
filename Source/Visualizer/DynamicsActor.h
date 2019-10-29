@@ -38,7 +38,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool DoYouWin = false;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool IsGameOver = false;
 
 	float SetupDistance;
