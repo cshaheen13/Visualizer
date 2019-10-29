@@ -152,7 +152,7 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 		DistanceXText->GetTextRender()->SetXScale(100);
 		DistanceXText->GetTextRender()->SetYScale(100);
 
-		HeightTextGoal = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(745.f, 950.f, 150.f), FRotator(0.f, 180.f, 0.f));
+		HeightTextGoal = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(745.f, 910.f, 150.f), FRotator(0.f, 180.f, 0.f));
 		MyTextVariable = "HeightTextGoal";
 		TextName = *MyTextVariable;
 		HeightTextGoal->Rename(TextName);
