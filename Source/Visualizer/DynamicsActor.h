@@ -48,7 +48,15 @@ protected:
 	virtual void BeginPlay() override;
 
 private:	
-		
+
+	class ATextRenderActor* CoordinateSystemXText;
+
+	class ATextRenderActor* CoordinateSystemZText;	
+
+	class ATextRenderActor* CoordinateSystemXDash;
+
+	class ATextRenderActor* CoordinateSystemZDash;
+
 	float RunningTime;
 
 	float GetAccelX();
@@ -63,6 +71,8 @@ private:
 	void SetWinDistance(float x, float y, float z);
 
 	void Setup();
+
+	void SpawnCoordinateSystemText();
 
 	void MoveKineticFrictionActor(float RunningTime);
 

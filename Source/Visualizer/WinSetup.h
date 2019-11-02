@@ -18,6 +18,12 @@ public:
 
 	float RandDistance;
 
+	UFUNCTION(BlueprintCallable)
+	FString GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero);
+
+	UFUNCTION(BlueprintCallable)
+	FText GetFloatAsTextWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -37,4 +43,5 @@ private:
 	void SetWinText();
 
 	void SetWinLight();
+
 };

@@ -69,6 +69,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTextActorVisible(bool PathHidden);
 
+	UFUNCTION(BlueprintCallable)
+	void ResetShot(FVector location);
+
 	void DeleteProjectileText();
 
 	UFUNCTION(BlueprintCallable)
@@ -87,6 +90,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetupShot(FString Location);
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector OriginalLocation;
 
 protected:
 	// Called when the game starts or when spawned
@@ -151,8 +157,6 @@ private:
 	float CenterPoint;
 
 	FVector HoopLocation;
-
-	FVector OriginalLocation;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
