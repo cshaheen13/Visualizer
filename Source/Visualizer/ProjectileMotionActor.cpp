@@ -127,15 +127,6 @@ void AProjectileMotionActor::MoveCamera(ACameraActor* Camera, FVector CameraLoca
 
 void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 {
-	//for (TActorIterator<ATextRenderActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	//{
-	//	ATextRenderActor *Text = *ActorItr;
-	//	if (Text != nullptr)
-	//	{
-	//		Text->K2_DestroyActor();
-	//	}
-	//}
-
 	FString ShotDistanceString = "X = " + (FString::SanitizeFloat(ShotDistance / 100)) + " meters";
 
 	if (IsDistanceTextRendered == false)
@@ -184,7 +175,6 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 		DistanceXText->SetActorLocation(FVector(InitialXLoc + ShotDistance / 2, -260.f, 150.f));
 		HeightTextBall->SetActorLocation(FVector(InitialXLoc, 925.f, 185.f));
 	}
-	
 }
 
 void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, bool PathHidden)
@@ -253,10 +243,10 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, b
 	}
 }
 
-void AProjectileMotionActor::ResetShot(FVector location)
-{
-	SetActorLocation(OriginalLocation);
-}
+//void AProjectileMotionActor::ResetShot(FVector location)
+//{
+//	SetActorLocation(OriginalLocation);
+//}
 
 void AProjectileMotionActor::SetTextActorVisible(bool PathHidden)
 {
@@ -294,9 +284,6 @@ void AProjectileMotionActor::MoveProjectileMotionActor(float DeltaTime)
 
 	float deltaX = InitialXLoc + (100 * (InitialVelocity * FMath::Cos(FMath::DegreesToRadians(InitialAngle)) * (RunningTime)));
 	float deltaZ = InitialZLoc + (100 * ((InitialVelocity * FMath::Sin(FMath::DegreesToRadians(InitialAngle)) * (RunningTime)) - (.5 * Gravity * (RunningTime) * (RunningTime))));
-	
-	//VelX = (NewLocation.X - OldLocation.X) / (RunningTime - OldTime);
-	//VelZ = (NewLocation.Z - OldLocation.Z) / (RunningTime - OldTime);
 
 	VelX = InitialVelocity * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
 	VelZ = (InitialVelocity * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * RunningTime);
@@ -335,3 +322,56 @@ void AProjectileMotionActor::MoveProjectileMotionActor(float DeltaTime)
 		//need to turn isimpulse off and end overlap
 	}
 }
+//{
+//	InitV = InitialVelocity;
+//	FVector NewLocation;
+//	FVector OldLocation = GetActorLocation();
+//	float initialX = OldLocation.X;
+//	float initialZ = OldLocation.Z;
+//	if (count == 0)
+//	{
+//		SetHitGroundTime(initialZ, InitV);
+//		UE_LOG(LogClass, Warning, TEXT("hit time = %f"), HitGroundTime);
+//		count++;
+//	}
+//	UE_LOG(LogClass, Warning, TEXT("count= %i"), count);
+//
+//	/*TimeMaxZ = InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle)) / Gravity;
+//	ZMax = initialZ + (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle)) * TimeMaxZ) - (.5 * Gravity * TimeMaxZ * TimeMaxZ);
+//	UE_LOG(LogClass, Warning, TEXT("tmax = %f"), TimeMaxZ);
+//	UE_LOG(LogClass, Warning, TEXT("zmax = %f"), ZMax);*/
+//
+//	float deltaX = initialX + ((InitV) * FMath::Cos(FMath::DegreesToRadians(InitialAngle)) * (RunningTime));
+//	float deltaZ = initialZ + (((InitV) * FMath::Sin(FMath::DegreesToRadians(InitialAngle)) * (RunningTime)) - (.5 * Gravity * (RunningTime) * (RunningTime)));
+//	UE_LOG(LogClass, Warning, TEXT("x = %f"), deltaX);
+//	UE_LOG(LogClass, Warning, TEXT("z = %f"), deltaZ);
+//	/*float VelSlope = (deltaZ - OldZ) / (deltaX - OldX);
+//	float angle = FMath::RadiansToDegrees(FMath::Atan(VelSlope)) - 90;*/
+//
+//	NewLocation.X = deltaX;
+//	NewLocation.Z = deltaZ;	
+//	RunningTime += DeltaTime;
+//	SetActorLocation(NewLocation);
+//
+//	VelX = InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
+//	VelZ = (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * RunningTime);
+//
+//	if (GetHitGroundTime() - RunningTime <= .05)
+//	{
+//		deltaX = initialX + (100 * (InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle)) * (GetHitGroundTime())));
+//		deltaZ = initialZ + (100 * ((InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle)) * (GetHitGroundTime())) - (.5 * Gravity * (GetHitGroundTime()) * (GetHitGroundTime()))));
+//		VelocityZHit = (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * GetHitGroundTime());
+//		VelZ = VelocityZHit * CoeffRestitution;
+//		InitV = (FMath::Sqrt((VelX * VelX) + (VelZ * VelZ)));
+//		SetHitGroundTime(deltaZ, InitV);
+//		RunningTime = 0;
+//		initialX = deltaX;
+//		initialZ = deltaZ;
+//		UE_LOG(LogClass, Warning, TEXT("t = %f"), t);
+//		UE_LOG(LogClass, Warning, TEXT("x = %f"), deltaX);
+//		UE_LOG(LogClass, Warning, TEXT("z = %f"), deltaZ);
+//	}
+//
+//	//OldX = deltaX;
+//	//OldZ = deltaZ;
+//}

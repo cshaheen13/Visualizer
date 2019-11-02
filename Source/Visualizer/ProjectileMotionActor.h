@@ -69,8 +69,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTextActorVisible(bool PathHidden);
 
-	UFUNCTION(BlueprintCallable)
-	void ResetShot(FVector location);
+	//UFUNCTION(BlueprintCallable)
+	//void ResetShot(FVector location);
 
 	void DeleteProjectileText();
 
@@ -166,5 +166,7 @@ private:
 	void MoveCamera(ACameraActor* Camera, FVector CameraLocation);
 
 	float QuadraticEquation(float Gravity, float InitialAngle, float InitialV, float RadiusBall, float InitialZ);
+
+	int count = 0;
 
 };
