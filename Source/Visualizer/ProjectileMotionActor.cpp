@@ -253,6 +253,11 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, b
 	}
 }
 
+void AProjectileMotionActor::ResetShot(FVector location)
+{
+	SetActorLocation(OriginalLocation);
+}
+
 void AProjectileMotionActor::SetTextActorVisible(bool PathHidden)
 {
 	for (TActorIterator<ATextRenderActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
