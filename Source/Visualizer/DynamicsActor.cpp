@@ -75,14 +75,14 @@ void ADynamicsActor::Setup()
 void ADynamicsActor::SpawnCoordinateSystemText()
 {
 	FString CoordinateSystemDash = "-";
-	CoordinateSystemXDash = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(850.0f, 1830.0f, 130.0f), FRotator(0.0f, 90.0f, 0.0f));
+	CoordinateSystemXDash = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1150.0f, 1830.0f, 130.0f), FRotator(0.0f, 90.0f, 0.0f));
 	CoordinateSystemXDash->GetTextRender()->SetText(FString(CoordinateSystemDash));
 	CoordinateSystemXDash->GetTextRender()->SetTextRenderColor(FColor::Red);
 	CoordinateSystemXDash->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
 	CoordinateSystemXDash->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
 	CoordinateSystemXDash->SetActorScale3D(FVector(1, 5, 1));
 
-	CoordinateSystemZDash = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(835.0f, 1830.0f, 145.0f), FRotator(0.0f, 90.0f, 90.0f));
+	CoordinateSystemZDash = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1135.0f, 1830.0f, 145.0f), FRotator(0.0f, 90.0f, 90.0f));
 	CoordinateSystemZDash->GetTextRender()->SetText(FString(CoordinateSystemDash));
 	CoordinateSystemZDash->GetTextRender()->SetTextRenderColor(FColor::Blue);
 	CoordinateSystemZDash->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
@@ -90,7 +90,7 @@ void ADynamicsActor::SpawnCoordinateSystemText()
 	CoordinateSystemZDash->SetActorScale3D(FVector(1, 5, 1));
 
 	FString CoordinateSystemX = "X";
-	CoordinateSystemXText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(872.0f, 1830.0f, 130.0f), FRotator(0.0f, 90.0f, 0.0f));
+	CoordinateSystemXText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1172.0f, 1830.0f, 130.0f), FRotator(0.0f, 90.0f, 0.0f));
 	CoordinateSystemXText->GetTextRender()->SetText(FString(CoordinateSystemX));
 	CoordinateSystemXText->GetTextRender()->SetTextRenderColor(FColor::Red); 
 	CoordinateSystemXText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
@@ -98,7 +98,7 @@ void ADynamicsActor::SpawnCoordinateSystemText()
 	CoordinateSystemXText->SetActorScale3D(FVector(1, .75, .75));
 
 	FString CoordinateSystemZ = "Y";
-	CoordinateSystemZText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(835.0f, 1830.0f, 170.0f), FRotator(0.0f, 90.0f, 0.0f));
+	CoordinateSystemZText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1135.0f, 1830.0f, 170.0f), FRotator(0.0f, 90.0f, 0.0f));
 	CoordinateSystemZText->GetTextRender()->SetText(FString(CoordinateSystemZ));
 	CoordinateSystemZText->GetTextRender()->SetTextRenderColor(FColor::Blue);
 	CoordinateSystemZText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
