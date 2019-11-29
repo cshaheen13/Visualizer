@@ -131,41 +131,9 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 
 	if (IsDistanceTextRendered == false)
 	{
-		DistanceXText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialXLoc + ShotDistance/2, -260.f, 150.f), FRotator(0.f, 90.f, 0.f));
-		FString MyTextVariable = "DistanceTextX";
-		const TCHAR* TextName = *MyTextVariable;
-		DistanceXText->Rename(TextName);
-		DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
-		DistanceXText->GetTextRender()->SetTextRenderColor(FColor::Black);
-		DistanceXText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-		DistanceXText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-		DistanceXText->GetTextRender()->SetWorldSize(1);
-		DistanceXText->GetTextRender()->SetXScale(100);
-		DistanceXText->GetTextRender()->SetYScale(100);
-
-		HeightTextGoal = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(745.f, 910.f, 150.f), FRotator(0.f, 180.f, 0.f));
-		MyTextVariable = "HeightTextGoal";
-		TextName = *MyTextVariable;
-		HeightTextGoal->Rename(TextName);
-		HeightTextGoal->GetTextRender()->SetText(FString("Y(g) = 3.05 meters"));
-		HeightTextGoal->GetTextRender()->SetTextRenderColor(FColor::Black);
-		HeightTextGoal->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-		HeightTextGoal->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-		HeightTextGoal->GetTextRender()->SetWorldSize(1);
-		HeightTextGoal->GetTextRender()->SetXScale(50);
-		HeightTextGoal->GetTextRender()->SetYScale(50);
-
-		HeightTextBall = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialXLoc, 925.f, 185.f), FRotator(0.f, 90.f, 0.f));
-		MyTextVariable = "HeightTextBall";
-		TextName = *MyTextVariable;
-		HeightTextBall->Rename(TextName);
-		HeightTextBall->GetTextRender()->SetText(FString("Y(b) = 2.12 meters"));
-		HeightTextBall->GetTextRender()->SetTextRenderColor(FColor::White);
-		HeightTextBall->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-		HeightTextBall->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-		HeightTextBall->GetTextRender()->SetWorldSize(1);
-		HeightTextBall->GetTextRender()->SetXScale(25);
-		HeightTextBall->GetTextRender()->SetYScale(25);
+		AProjectileMotionActor::SpawnText(DistanceXText, InitialXLoc + ShotDistance / 2, -260, 150, 0, 90, 0, ShotDistanceString, "DistanceTextX", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 100, 100, false);
+		AProjectileMotionActor::SpawnText(HeightTextGoal, 745, 910, 150, 0, 180, 0, "Y(g) = 3.05 meters", "HeightTextGoal", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 50, 50, false);
+		AProjectileMotionActor::SpawnText(HeightTextBall, InitialXLoc, 925, 180, 0, 90, 0, "Y(b) = 2.12 meters", "HeightTextBall", FColor::White, EHTA_Center, EVRTA_TextCenter, 1, 25, 25, false);
 
 		IsDistanceTextRendered = true;
 	}
@@ -202,16 +170,7 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, b
 		float VelSlope = (deltaZ - OldZ) / (deltaX - OldX);
 		float angle = FMath::RadiansToDegrees(FMath::Atan(VelSlope)) - 90;
 
-		ProjectileMotionMapText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(deltaX, 925.f, deltaZ), FRotator(0.f, 90.f, angle));
-		ProjectileMotionMapText->GetTextRender()->SetText(FString(WinDistanceString));
-		ProjectileMotionMapText->GetTextRender()->SetTextRenderColor(FColor::Red);
-		ProjectileMotionMapText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-		ProjectileMotionMapText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-		ProjectileMotionMapText->GetTextRender()->SetWorldSize(1);
-		ProjectileMotionMapText->GetTextRender()->SetXScale(50);
-		ProjectileMotionMapText->GetTextRender()->SetYScale(25);
-		ProjectileMotionMapText->GetTextRender()->SetHiddenInGame(PathHidden);
-		
+		AProjectileMotionActor::SpawnText(ProjectileMotionMapText, deltaX, 925, deltaZ, 0, 90, angle, WinDistanceString, "NULL", FColor::Red, EHTA_Center, EVRTA_TextCenter, 1, 50, 25, PathHidden);
 
 		VelX = InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
 		VelZ = (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * t);
@@ -322,6 +281,26 @@ void AProjectileMotionActor::MoveProjectileMotionActor(float DeltaTime)
 		//need to turn isimpulse off and end overlap
 	}
 }
+
+void AProjectileMotionActor::SpawnText(class ATextRenderActor* TextActo, float InitialX, float InitialY, float InitialZ, float Pitch, float Yaw, float Roll, FString TextString, FString TextName, FColor Color, enum EHorizTextAligment HorizAlign, enum EVerticalTextAligment VertAlign, float WorldSize, float XScal, float YSca, bool IsTextHid) {
+
+	TextActo = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialX, InitialY, InitialZ), FRotator(Pitch, Yaw, Roll));
+	if (TextName != "NULL") {
+		FString MyTextVariable = TextName;
+		const TCHAR* TextName1 = *MyTextVariable;
+		TextActo->Rename(TextName1);
+	}
+	TextActo->GetTextRender()->SetText(FString(TextString));
+	TextActo->GetTextRender()->SetTextRenderColor(Color);
+	TextActo->GetTextRender()->SetHorizontalAlignment(HorizAlign);
+	TextActo->GetTextRender()->SetVerticalAlignment(VertAlign);
+	TextActo->GetTextRender()->SetWorldSize(WorldSize);
+	TextActo->GetTextRender()->SetXScale(XScal);
+	TextActo->GetTextRender()->SetYScale(YSca);
+	TextActo->GetTextRender()->SetHiddenInGame(IsTextHid);
+
+}
+
 //{
 //	InitV = InitialVelocity;
 //	FVector NewLocation;
