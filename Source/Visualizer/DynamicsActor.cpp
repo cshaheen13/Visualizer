@@ -55,7 +55,6 @@ void ADynamicsActor::Setup()
 	SetActorTickEnabled(false);
 	SetAccelX(KineticFriction, Gravity);
 	
-	///TODO set precision for floats so win distance is two decimal places or less
 	//***Cast Component onto Actor***
 	UWinSetup* GetWinSetup = Cast<UWinSetup>(ActorThatWins->GetComponentByClass(UWinSetup::StaticClass()));
 	if (GetWinSetup)

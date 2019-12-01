@@ -8,6 +8,7 @@
 #include "Runtime/Engine/Classes/Engine/RectLight.h"
 #include "Runtime/Engine/Classes/Components/RectLightComponent.h"
 #include "Runtime/Engine/Classes/Components/SceneComponent.h"
+#include "MyBlueprintFunctionLibrary.h"
 
 // Sets default values for this component's properties
 UWinSetup::UWinSetup()
@@ -42,7 +43,7 @@ void UWinSetup::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UWinSetup::SetWinText()
 {
-	FString WinDistanceString = "X = " + UWinSetup::GetFloatAsStringWithPrecision((RandDistance/100), 2, true) + " meters";
+	FString WinDistanceString = "X = " + UMyBlueprintFunctionLibrary::GetFloatAsStringWithPrecision((RandDistance/100), 2, true) + " meters";
 	//FString WinDistanceString = "X = " + FString::SanitizeFloat(RandDistance / 100) + " meters";
 	WinDistanceText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(RandDistance, 930.0f, -10.0f), FRotator(0.0f, 90.0f, 0.0f));
 	WinDistanceText->GetTextRender()->SetText(FString(WinDistanceString));
@@ -61,41 +62,5 @@ void UWinSetup::SetWinLight()
 	GetWinLight->SetMobility(EComponentMobility::Movable);
 	GetWinLight->SetSourceWidth(115);
 	GetWinLight->SetSourceHeight(115);
-}
-
-//In YourFunctionLibrary.h
-
-//Float as String With Precision!
-FString UWinSetup::GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
-{
-	//Round to integral if have something like 1.9999 within precision
-	float Rounded = roundf(TheFloat);
-	if (FMath::Abs(TheFloat - Rounded) < FMath::Pow(10, -1 * Precision))
-	{
-		TheFloat = Rounded;
-	}
-	FNumberFormattingOptions NumberFormat;					//Text.h
-	NumberFormat.MinimumIntegralDigits = (IncludeLeadingZero) ? 1 : 0;
-	NumberFormat.MaximumIntegralDigits = 10000;
-	NumberFormat.MinimumFractionalDigits = Precision;
-	NumberFormat.MaximumFractionalDigits = Precision;
-	return FText::AsNumber(TheFloat, &NumberFormat).ToString();
-}
-
-//Float as FText With Precision!
-FText UWinSetup::GetFloatAsTextWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
-{
-	//Round to integral if have something like 1.9999 within precision
-	float Rounded = roundf(TheFloat);
-	if (FMath::Abs(TheFloat - Rounded) < FMath::Pow(10, -1 * Precision))
-	{
-		TheFloat = Rounded;
-	}
-	FNumberFormattingOptions NumberFormat;					//Text.h
-	NumberFormat.MinimumIntegralDigits = (IncludeLeadingZero) ? 1 : 0;
-	NumberFormat.MaximumIntegralDigits = 10000;
-	NumberFormat.MinimumFractionalDigits = Precision;
-	NumberFormat.MaximumFractionalDigits = Precision;
-	return FText::AsNumber(TheFloat, &NumberFormat);
 }
 
