@@ -57,6 +57,12 @@ private:
 
 	class ATextRenderActor* CoordinateSystemZDash;
 
+	FString CoordinateSystemDash = "-";
+
+	FString CoordinateSystemX = "X";
+
+	FString CoordinateSystemZ = "Y";
+
 	float RunningTime;
 
 	float GetAccelX();

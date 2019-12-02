@@ -8,6 +8,7 @@
 #include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 #include "Runtime/Engine/Classes/Engine/TextRenderActor.h"
 #include "Components/TextRenderComponent.h"
+#include "SpawnTextActorComponent.h"
 
 
 // Sets default values
@@ -73,36 +74,17 @@ void ADynamicsActor::Setup()
 
 void ADynamicsActor::SpawnCoordinateSystemText()
 {
-	FString CoordinateSystemDash = "-";
-	CoordinateSystemXDash = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1150.0f, 1830.0f, 130.0f), FRotator(0.0f, 90.0f, 0.0f));
-	CoordinateSystemXDash->GetTextRender()->SetText(FString(CoordinateSystemDash));
-	CoordinateSystemXDash->GetTextRender()->SetTextRenderColor(FColor::Red);
-	CoordinateSystemXDash->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-	CoordinateSystemXDash->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-	CoordinateSystemXDash->SetActorScale3D(FVector(1, 5, 1));
-
-	CoordinateSystemZDash = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1135.0f, 1830.0f, 145.0f), FRotator(0.0f, 90.0f, 90.0f));
-	CoordinateSystemZDash->GetTextRender()->SetText(FString(CoordinateSystemDash));
-	CoordinateSystemZDash->GetTextRender()->SetTextRenderColor(FColor::Blue);
-	CoordinateSystemZDash->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-	CoordinateSystemZDash->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-	CoordinateSystemZDash->SetActorScale3D(FVector(1, 5, 1));
-
-	FString CoordinateSystemX = "X";
-	CoordinateSystemXText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1172.0f, 1830.0f, 130.0f), FRotator(0.0f, 90.0f, 0.0f));
-	CoordinateSystemXText->GetTextRender()->SetText(FString(CoordinateSystemX));
-	CoordinateSystemXText->GetTextRender()->SetTextRenderColor(FColor::Red); 
-	CoordinateSystemXText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-	CoordinateSystemXText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-	CoordinateSystemXText->SetActorScale3D(FVector(1, .75, .75));
-
-	FString CoordinateSystemZ = "Y";
-	CoordinateSystemZText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(1135.0f, 1830.0f, 170.0f), FRotator(0.0f, 90.0f, 0.0f));
-	CoordinateSystemZText->GetTextRender()->SetText(FString(CoordinateSystemZ));
-	CoordinateSystemZText->GetTextRender()->SetTextRenderColor(FColor::Blue);
-	CoordinateSystemZText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
-	CoordinateSystemZText->GetTextRender()->SetVerticalAlignment(EVRTA_TextCenter);
-	CoordinateSystemZText->SetActorScale3D(FVector(1, .75, .75));
+	USpawnTextActorComponent* GetSpawnText = Cast<USpawnTextActorComponent>(ActorThatWins->GetComponentByClass(USpawnTextActorComponent::StaticClass()));
+	if (GetSpawnText)
+	{
+		CoordinateSystemXText = GetSpawnText->SpawnText(CoordinateSystemXText, 1172, 1830, 130, 0, 90, 0, CoordinateSystemX, "CoordinateSystemX", FColor::Red, EHTA_Center, EVRTA_TextCenter, 1, 25, 25, false);
+		CoordinateSystemXDash = GetSpawnText->SpawnText(CoordinateSystemXDash, 1150, 1830, 130, 0, 90, 0, CoordinateSystemDash, "CoordinateSystemXDash", FColor::Red, EHTA_Center, EVRTA_TextCenter, 1, 100, 50, false);
+		CoordinateSystemZText = GetSpawnText->SpawnText(CoordinateSystemZText, 1135, 1830, 170, 0, 90, 0, CoordinateSystemZ, "CoordinateSystemZ", FColor::Blue, EHTA_Center, EVRTA_TextCenter, 1, 25, 25, false);
+		CoordinateSystemZDash = GetSpawnText->SpawnText(CoordinateSystemZDash, 1135, 1830, 145, 0, 90, 90, CoordinateSystemDash, "CoordinateSystemZDash", FColor::Blue, EHTA_Center, EVRTA_TextCenter, 1, 100, 50, false);
+	}
+	else {
+		UE_LOG(LogClass, Warning, TEXT("No Spawn Text Component"));
+	}
 }
 
 void ADynamicsActor::MoveKineticFrictionActor(float DeltaTime)
@@ -128,7 +110,6 @@ void ADynamicsActor::CheckWinLose()
 {
 	FVector NewLocation = GetActorLocation();
 	FVector WinLoseDist = ADynamicsActor::GetWinDistance();
-	//TODO Figure out rounding for floats
 	UE_LOG(LogClass, Warning, TEXT("X = %f"), WinLoseDist.X - NewLocation.X);
 	if (((WinLoseDist.X - NewLocation.X) < 5.0f) && ((WinLoseDist.X - NewLocation.X) > -5.0f))
 	{

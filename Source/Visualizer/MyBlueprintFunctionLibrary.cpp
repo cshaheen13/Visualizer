@@ -1,6 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MyBlueprintFunctionLibrary.h"
+#include "Runtime/Engine/Classes/Components/TextRenderComponent.h"
+#include "Engine/TextRenderActor.h"
+#include "Components/TextRenderComponent.h"
+
 
 FString UMyBlueprintFunctionLibrary::GetFloatAsStringWithPrecision(float TheFloat, int32 Precision, bool IncludeLeadingZero)
 {

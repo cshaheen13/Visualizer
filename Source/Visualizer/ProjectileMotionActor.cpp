@@ -2,15 +2,16 @@
 
 
 #include "ProjectileMotionActor.h"
+#include "SpawnTextActorComponent.h"
 #include "Runtime/Core/Public/Math/UnrealMathUtility.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
 #include "Runtime/Engine/Classes/Components/PrimitiveComponent.h"
-#include "Runtime/Engine/Classes/Components/TextRenderComponent.h"
 #include "Engine/TextRenderActor.h"
 #include "Components/TextRenderComponent.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "EngineUtils.h"
+#include "MyBlueprintFunctionLibrary.h"
 #include "Misc/Char.h"
 
 // Sets default values
@@ -25,7 +26,6 @@ AProjectileMotionActor::AProjectileMotionActor()
 	Overlap->SetupAttachment(RootComponent);
 	Overlap->OnComponentBeginOverlap.AddDynamic(this, &AProjectileMotionActor::BeginOverlap);
 	Overlap->OnComponentBeginOverlap.AddDynamic(this, &AProjectileMotionActor::EndOverlap);
-
 }
 
 // Called when the game starts or when spawned
@@ -131,17 +131,29 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 
 	if (IsDistanceTextRendered == false)
 	{
-		AProjectileMotionActor::SpawnText(DistanceXText, InitialXLoc + ShotDistance / 2, -260, 150, 0, 90, 0, ShotDistanceString, "DistanceTextX", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 100, 100, false);
-		AProjectileMotionActor::SpawnText(HeightTextGoal, 745, 910, 150, 0, 180, 0, "Y(g) = 3.05 meters", "HeightTextGoal", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 50, 50, false);
-		AProjectileMotionActor::SpawnText(HeightTextBall, InitialXLoc, 925, 180, 0, 90, 0, "Y(b) = 2.12 meters", "HeightTextBall", FColor::White, EHTA_Center, EVRTA_TextCenter, 1, 25, 25, false);
-
-		IsDistanceTextRendered = true;
+		USpawnTextActorComponent* GetSpawnText = Cast<USpawnTextActorComponent>(ActorThatWins->GetComponentByClass(USpawnTextActorComponent::StaticClass()));
+		if (GetSpawnText)
+		{		
+			DistanceXText = GetSpawnText->SpawnText(DistanceXText, InitialXLoc + ShotDistance / 2, -260, 150, 0, 90, 0, ShotDistanceString, "DistanceTextX", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 100, 100, false);
+			HeightTextGoal = GetSpawnText->SpawnText(HeightTextGoal, 745, 910, 150, 0, 180, 0, "Y(g) = 3.05 meters", "HeightTextGoal", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 50, 50, false);
+			HeightTextBall = GetSpawnText->SpawnText(HeightTextBall, InitialXLoc, 925, 180, 0, 90, 0, "Y(b) = 2.12 meters", "HeightTextBall", FColor::White, EHTA_Center, EVRTA_TextCenter, 1, 25, 25, false);
+			IsDistanceTextRendered = true;
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("No Spawn Text Component"));
+		}
 	}
 	else
 	{
-		DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
-		DistanceXText->SetActorLocation(FVector(InitialXLoc + ShotDistance / 2, -260.f, 150.f));
-		HeightTextBall->SetActorLocation(FVector(InitialXLoc, 925.f, 185.f));
+		if (DistanceXText != NULL && HeightTextBall != NULL) {
+			DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
+			DistanceXText->SetActorLocation(FVector(InitialXLoc + ShotDistance / 2, -260.f, 150.f));
+			HeightTextBall->SetActorLocation(FVector(InitialXLoc, 925.f, 185.f));
+		}
+		else {
+			UE_LOG(LogClass, Warning, TEXT("NULL DistanceXText, HeightTextBall"));
+		}
+
 	}
 }
 
@@ -170,7 +182,16 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, b
 		float VelSlope = (deltaZ - OldZ) / (deltaX - OldX);
 		float angle = FMath::RadiansToDegrees(FMath::Atan(VelSlope)) - 90;
 
-		AProjectileMotionActor::SpawnText(ProjectileMotionMapText, deltaX, 925, deltaZ, 0, 90, angle, WinDistanceString, "NULL", FColor::Red, EHTA_Center, EVRTA_TextCenter, 1, 50, 25, PathHidden);
+
+		USpawnTextActorComponent* GetSpawnText = Cast<USpawnTextActorComponent>(ActorThatWins->GetComponentByClass(USpawnTextActorComponent::StaticClass()));
+		if (GetSpawnText)
+		{
+			ProjectileMotionMapText = GetSpawnText->SpawnText(ProjectileMotionMapText, deltaX, 925, deltaZ, 0, 90, angle, WinDistanceString, "NULL", FColor::Red, EHTA_Center, EVRTA_TextCenter, 1, 50, 25, PathHidden);
+		}
+		else
+		{
+			UE_LOG(LogClass, Warning, TEXT("No Spawn Text Component"));
+		}
 
 		VelX = InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
 		VelZ = (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * t);
@@ -282,24 +303,24 @@ void AProjectileMotionActor::MoveProjectileMotionActor(float DeltaTime)
 	}
 }
 
-void AProjectileMotionActor::SpawnText(class ATextRenderActor* TextActo, float InitialX, float InitialY, float InitialZ, float Pitch, float Yaw, float Roll, FString TextString, FString TextName, FColor Color, enum EHorizTextAligment HorizAlign, enum EVerticalTextAligment VertAlign, float WorldSize, float XScal, float YSca, bool IsTextHid) {
-
-	TextActo = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialX, InitialY, InitialZ), FRotator(Pitch, Yaw, Roll));
-	if (TextName != "NULL") {
-		FString MyTextVariable = TextName;
-		const TCHAR* TextName1 = *MyTextVariable;
-		TextActo->Rename(TextName1);
-	}
-	TextActo->GetTextRender()->SetText(FString(TextString));
-	TextActo->GetTextRender()->SetTextRenderColor(Color);
-	TextActo->GetTextRender()->SetHorizontalAlignment(HorizAlign);
-	TextActo->GetTextRender()->SetVerticalAlignment(VertAlign);
-	TextActo->GetTextRender()->SetWorldSize(WorldSize);
-	TextActo->GetTextRender()->SetXScale(XScal);
-	TextActo->GetTextRender()->SetYScale(YSca);
-	TextActo->GetTextRender()->SetHiddenInGame(IsTextHid);
-
-}
+//void AProjectileMotionActor::SpawnText(class ATextRenderActor* TextActo, float InitialX, float InitialY, float InitialZ, float Pitch, float Yaw, float Roll, FString TextString, FString TextName, FColor Color, enum EHorizTextAligment HorizAlign, enum EVerticalTextAligment VertAlign, float WorldSize, float XScal, float YSca, bool IsTextHid) {
+//
+//	TextActo = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialX, InitialY, InitialZ), FRotator(Pitch, Yaw, Roll));
+//	if (TextName != "NULL") {
+//		FString MyTextVariable = TextName;
+//		const TCHAR* TextName1 = *MyTextVariable;
+//		TextActo->Rename(TextName1);
+//	}
+//	TextActo->GetTextRender()->SetText(FString(TextString));
+//	TextActo->GetTextRender()->SetTextRenderColor(Color);
+//	TextActo->GetTextRender()->SetHorizontalAlignment(HorizAlign);
+//	TextActo->GetTextRender()->SetVerticalAlignment(VertAlign);
+//	TextActo->GetTextRender()->SetWorldSize(WorldSize);
+//	TextActo->GetTextRender()->SetXScale(XScal);
+//	TextActo->GetTextRender()->SetYScale(YSca);
+//	TextActo->GetTextRender()->SetHiddenInGame(IsTextHid);
+//
+//}
 
 //{
 //	InitV = InitialVelocity;
