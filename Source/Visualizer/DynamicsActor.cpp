@@ -99,9 +99,16 @@ void ADynamicsActor::MoveKineticFrictionActor(float DeltaTime)
 		RunningTime += DeltaTime;
 		SetActorLocation(NewLocation);
 	}
+	else if (IsGameOver != true) {
+		IsGameOver = true;
+		SetActorTickEnabled(false);
+	}
+
+	UE_LOG(LogClass, Warning, TEXT("Time = %f"), RunningTime);
 
 	if ((RunningTime >= 0.1) && ((NewLocation.X - OldLocation.X) <= 0.02))
 	{
+		//TODO: Make this an actor component since sandbox doesn't need this
 		ADynamicsActor::CheckWinLose();
 	}
 }
