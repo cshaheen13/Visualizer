@@ -124,13 +124,14 @@ void AProjectileMotionActor::MoveCamera(ACameraActor* Camera, FVector CameraLoca
 void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 {
 	FString ShotDistanceString = "X = " + (FString::SanitizeFloat(ShotDistance / 100)) + " meters";
+	const FText& ShotDistanceText = FText::FromString(ShotDistanceString);
 
 	if (IsDistanceTextRendered == false)
 	{
 		USpawnTextActorComponent* GetSpawnText = Cast<USpawnTextActorComponent>(ActorThatWins->GetComponentByClass(USpawnTextActorComponent::StaticClass()));
 		if (GetSpawnText)
 		{		
-			DistanceXText = GetSpawnText->SpawnText(DistanceXText, InitialXLoc + ShotDistance / 2, -260, 150, 0, 90, 0, ShotDistanceString, "DistanceTextX", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 100, 100, false);
+			DistanceXText = GetSpawnText->SpawnText(DistanceXText, InitialXLoc + ShotDistance / 2, -260, 150, 0, 90, 0, ShotDistanceString, "DistanceXText", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 100, 100, false);
 			HeightTextGoal = GetSpawnText->SpawnText(HeightTextGoal, 745, 910, 150, 0, 180, 0, "Y(g) = 3.05 meters", "HeightTextGoal", FColor::Black, EHTA_Center, EVRTA_TextCenter, 1, 50, 50, false);
 			HeightTextBall = GetSpawnText->SpawnText(HeightTextBall, InitialXLoc, 925, 180, 0, 90, 0, "Y(b) = 2.12 meters", "HeightTextBall", FColor::White, EHTA_Center, EVRTA_TextCenter, 1, 25, 25, false);
 			IsDistanceTextRendered = true;
@@ -142,7 +143,7 @@ void AProjectileMotionActor::SetDistanceText(float initialX, float initialZ)
 	else
 	{
 		if (DistanceXText != NULL && HeightTextBall != NULL) {
-			DistanceXText->GetTextRender()->SetText(FString(ShotDistanceString));
+			DistanceXText->GetTextRender()->SetText(FText(ShotDistanceText));
 			DistanceXText->SetActorLocation(FVector(InitialXLoc + ShotDistance / 2, -260.f, 150.f));
 			HeightTextBall->SetActorLocation(FVector(InitialXLoc, 925.f, 185.f));
 		}
@@ -191,6 +192,7 @@ void AProjectileMotionActor::SetProjectileText(float initialX, float initialZ, b
 
 		VelX = InitV * FMath::Cos(FMath::DegreesToRadians(InitialAngle));
 		VelZ = (InitV * FMath::Sin(FMath::DegreesToRadians(InitialAngle))) - (Gravity * t);
+
 
 		if (GetHitGroundTime() - t <= .05)
 		{
@@ -273,10 +275,13 @@ void AProjectileMotionActor::MoveProjectileMotionActor(float DeltaTime)
 
 	if(isImpulse)
 	{
+		UE_LOG(LogClass, Warning, TEXT("VzI = %f"), VelZ);
+		UE_LOG(LogClass, Warning, TEXT("VxI = %f"), VelX);
 		VelZ = VelZ * CoeffRestitution;
 		InitialVelocity = (FMath::Sqrt((VelX * VelX) + (VelZ * VelZ)));
 		ImpulseVelocityZ = InitialVelocity * FMath::Sin(FMath::DegreesToRadians(InitialAngle));
 		UE_LOG(LogClass, Warning, TEXT("ImpVZ = %f"), ImpulseVelocityZ);
+
 
 		FVector InitialImpulseLocation = GetActorLocation();
 		RunningTime = 0;

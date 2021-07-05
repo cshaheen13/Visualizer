@@ -28,7 +28,7 @@ private:
 
 	class ARectLight* WinLight;
 
-	class ATextRenderActor* WinDistanceText;	
+	class ATextRenderActor* WinDistanceTextActor;	
 
 	FVector WinLightLocation;
 

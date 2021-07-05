@@ -44,11 +44,12 @@ void UWinSetup::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UWinSetup::SetWinText()
 {
 	FString WinDistanceString = "X = " + UMyBlueprintFunctionLibrary::GetFloatAsStringWithPrecision((RandDistance/100), 2, true) + " meters";
-	//FString WinDistanceString = "X = " + FString::SanitizeFloat(RandDistance / 100) + " meters";
-	WinDistanceText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(RandDistance, 930.0f, -10.0f), FRotator(0.0f, 90.0f, 0.0f));
-	WinDistanceText->GetTextRender()->SetText(FString(WinDistanceString));
-	WinDistanceText->GetTextRender()->SetTextRenderColor(FColor::Red);
-	WinDistanceText->SetActorScale3D(FVector(0.0f, 1.5f, 1.5f));
+	const FText& WinDistanceText = FText::FromString(WinDistanceString);
+	WinDistanceTextActor = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(RandDistance, 930.0f, -10.0f), FRotator(0.0f, 90.0f, 0.0f));
+	WinDistanceTextActor->GetTextRender()->SetText(WinDistanceText);
+	WinDistanceTextActor->GetTextRender()->SetTextRenderColor(FColor::Red);
+	WinDistanceTextActor->GetTextRender()->SetXScale(1.25);
+	WinDistanceTextActor->GetTextRender()->SetYScale(1.25);
 }
 
 void UWinSetup::SetWinLight()

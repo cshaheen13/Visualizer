@@ -20,11 +20,11 @@ ATextRenderActor* USpawnTextActorComponent::SpawnText(class ATextRenderActor* Te
 
 	TextActo = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(InitialX, InitialY, InitialZ), FRotator(Pitch, Yaw, Roll));
 	if (TextName != "NULL") {
-		FString MyTextVariable = TextName;
-		const TCHAR* TextName1 = *MyTextVariable;
-		TextActo->Rename(TextName1);
+		FText MyText = FText::FromString(TextString);
+		const TCHAR* MyTextName = *TextName;
+		TextActo->Rename(MyTextName);
+		TextActo->GetTextRender()->SetText(MyText);
 	}
-	TextActo->GetTextRender()->SetText(FString(TextString));
 	TextActo->GetTextRender()->SetTextRenderColor(Color);
 	TextActo->GetTextRender()->SetHorizontalAlignment(HorizAlign);
 	TextActo->GetTextRender()->SetVerticalAlignment(VertAlign);
